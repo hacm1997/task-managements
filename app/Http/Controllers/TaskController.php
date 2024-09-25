@@ -4,21 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Task::query();
+        // Load user information and tasks, optimizing filtering.
+        $query = Task::with('user');
 
-        // Filtrar by cumpleted status
-        if ($request->has('completed')) {
+        // Filter by completion status
+        if ($request->filled('completed')) {
             $query->where('is_completed', $request->query('completed'));
         }
 
-        // Filtro by input text
-        if ($request->has('search')) {
+        // Filter by search text
+        if ($request->filled('search')) {
             $search = $request->query('search');
             $query->where(function ($subQuery) use ($search) {
                 $subQuery->where('title', 'like', '%' . $search . '%')
@@ -26,64 +27,78 @@ class TaskController extends Controller
             });
         }
 
-        // pagination results per page, deafult 10 items
-        $tasks = $query->paginate(10);
+        // Pagination with default of 10 results per page
+        $tasks = $query->paginate($request->get('per_page', 10));
 
         return response()->json($tasks);
     }
 
     public function show(Task $task)
     {
+        // Load user relationship
+        $task->load('user');
+
         return response()->json($task);
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        // Input validation
+        $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'due_date' => 'required|date',
         ]);
 
-        $task = auth()->user()->tasks()->create($request->all());
+        // Create the task associated with the authenticated user
+        $task = Auth::user()->tasks()->create($validatedData);
+
+        // Load user relationship
+        $task->load('user');
+
         return response()->json($task, 201);
     }
 
     public function update(Request $request, Task $task)
     {
-        // $this->authorize('update', $task); //Policies verification
+        // Check if the user has permission to update the task
+        $this->authorize('update', $task);
 
-        $request->validate([
+        // Input validation, only for submitted fields
+        $validatedData = $request->validate([
             'title' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|required|string',
             'due_date' => 'sometimes|required|date',
         ]);
 
-        $task->update($request->all());
+        // Update task
+        $task->update($validatedData);
+
         return response()->json($task);
     }
 
     public function markAsCompleted(Task $task, $complete)
     {
-        // $this->authorize('update', $task); //Policies verification
+        // Check if the user has permission to update the task
+        $this->authorize('update', $task);
 
-        $task->is_completed = $complete == 1;
-        $task->save();
+        // Mark task as completed or not completed
+        $task->update(['is_completed' => (bool) $complete]);
 
         return response()->json($task);
     }
 
     public function destroy(Task $task)
     {
-        // $this->authorize('delete', $task);
-        // Log::info('User Role: ' . auth()->user()->role);
-        // Log::info('Task id: ' . $task);
-        if (auth()->user()->role == 'admin') {
-            $task->delete();
-            return response()->json(['message' => 'Task deleted successfully']);
-        } else {
-            return response()->json(['message' => 'Unauthorized']);
-        }
-    }
+        // Check if the user has permission to delete the task
+        $this->authorize('delete', $task);
 
+        if (Auth::user()->role === 'admin') {
+            $task->delete();
+
+            return response()->json(['message' => 'Task deleted successfully']);
+        }
+
+        return response()->json(['message' => 'Unauthorized'], 403);
+    }
 }

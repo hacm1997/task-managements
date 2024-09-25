@@ -16,6 +16,7 @@ class Task extends Model
         'is_completed', //optional
     ];
 
+    // relationship
     public function user()
     {
         return $this->belongsTo(User::class);

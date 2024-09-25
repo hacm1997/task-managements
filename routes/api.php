@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CustomAuthController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +26,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('tasks/{task}/complete/{complete}', [TaskController::class, 'markAsCompleted']);
 
     Route::put('tasks/{task}/update', [TaskController::class, 'update']);
+
+    Route::get('/users/{id}', [UserController::class, 'getUserById']);
+
+    Route::get('/all-users', [UserController::class, 'getAllUsers']);
 
     //routh only admin user
     Route::delete('tasks/{task}', [TaskController::class, 'destroy']);
