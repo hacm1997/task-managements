@@ -51,7 +51,7 @@ Asegurarse de tener MySQL instalado y ejecutándose
 CREATE DATABASE task-management;
 ```
 
--   Si se hace desde windows, usar MySQL Workbench o alguna herramienta que usted prefiera para ejecutar MySQL y crear la base de datos
+-   Si se hace desde windows, usar MySQL Workbench, phpMyAdmin o alguna herramienta que usted prefiera para ejecutar MySQL y crear la base de datos
 
 ### 5. Ejecutar migraciones
 
