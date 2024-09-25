@@ -61,7 +61,7 @@ Una vez creada la base de datos, ejecuta las migraciones para crear las tablas n
 php artisan migrate
 ```
 
-### 6. nstalar dependencias de npm
+### 6. Instalar dependencias de npm
 
 Se debe tener Node.js y npm instalados. Luego, ejecutar el siguiente comando en la raíz del proyecto:
 
@@ -74,6 +74,8 @@ o bien también funciona con:
 ```bash
 npm i
 ```
+
+Si está usando usuario root (en caso de usar linux como OS) y no le deja instalar las dependencias npm, puede de igual manera continuar con la ejecución del servicio
 
 ### 7. Compilar los assets
 
