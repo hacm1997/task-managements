@@ -31,10 +31,15 @@ cd task-managements
 Dejé el archivo .env ya configurado más que todo para la conexión con MySQL:
 
 DB_CONNECTION=mysql
+
 DB_HOST=127.0.0.1
+
 DB_PORT=3306
+
 DB_DATABASE=task-management
+
 DB_USERNAME=root
+
 DB_PASSWORD=root
 
 Puede dejarlo como ya está diseñado o cambiarlo, se debe tener en cuenta los datos mostrados para establecer la conexión con MySQL
