@@ -1,4 +1,4 @@
-# Proyecto Laravel - Task Management
+# Proyecto Laravel - Task Management (Servicio)
 
 Este es un servicio (backend) de gestión de tareas desarrollado en Laravel
 
