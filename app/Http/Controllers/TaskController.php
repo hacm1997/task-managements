@@ -10,18 +10,6 @@ class TaskController extends Controller
 {
     public function index(Request $request)
     {
-        // $query = auth()->user()->tasks()->where('is_completed', $request->query('completed', false));
-        //FIltering
-        // if ($request->has('search')) {
-        //     $search = $request->query('search');
-        //     $query->where(function ($subQuery) use ($search) {
-        //         $subQuery->where('title', 'like', '%' . $search . '%')
-        //             ->orWhere('description', 'like', '%' . $search . '%');
-        //     });
-        // }
-
-        // $tasks = $query->paginate(10);
-        // return response()->json($tasks);
         $query = Task::query();
 
         // Filtrar by cumpleted status
@@ -29,7 +17,7 @@ class TaskController extends Controller
             $query->where('is_completed', $request->query('completed'));
         }
 
-        // Filtro de búsqueda
+        // Filtro by input text
         if ($request->has('search')) {
             $search = $request->query('search');
             $query->where(function ($subQuery) use ($search) {
@@ -38,10 +26,15 @@ class TaskController extends Controller
             });
         }
 
-        // Paginación de resultados
+        // pagination results per page, deafult 10 items
         $tasks = $query->paginate(10);
 
         return response()->json($tasks);
+    }
+
+    public function show(Task $task)
+    {
+        return response()->json($task);
     }
 
     public function store(Request $request)
@@ -70,11 +63,11 @@ class TaskController extends Controller
         return response()->json($task);
     }
 
-    public function markAsCompleted(Task $task)
+    public function markAsCompleted(Task $task, $complete)
     {
         // $this->authorize('update', $task); //Policies verification
 
-        $task->is_completed = true;
+        $task->is_completed = $complete == 1;
         $task->save();
 
         return response()->json($task);
@@ -83,8 +76,8 @@ class TaskController extends Controller
     public function destroy(Task $task)
     {
         // $this->authorize('delete', $task);
-        Log::info('User Role: ' . auth()->user()->role);
-        Log::info('Task id: ' . $task);
+        // Log::info('User Role: ' . auth()->user()->role);
+        // Log::info('Task id: ' . $task);
         if (auth()->user()->role == 'admin') {
             $task->delete();
             return response()->json(['message' => 'Task deleted successfully']);

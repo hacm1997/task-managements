@@ -19,8 +19,12 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('tasks', TaskController::class)->except(['destroy']); //CRUD routes
 
-    //routh for marking tasks as completed
-    Route::put('tasks/{task}/complete', [TaskController::class, 'markAsCompleted']);
+    Route::get('tasks/{task}', [TaskController::class, 'show']);
+
+    //routh for marking tasks as completed and not compelted
+    Route::put('tasks/{task}/complete/{complete}', [TaskController::class, 'markAsCompleted']);
+
+    Route::put('tasks/{task}/update', [TaskController::class, 'update']);
 
     //routh only admin user
     Route::delete('tasks/{task}', [TaskController::class, 'destroy']);
